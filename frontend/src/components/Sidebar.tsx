@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useDesignStore } from '../store/design'
 import { THEMES } from '../themes/palettes'
 import type { PatternType } from '../types'
@@ -12,6 +13,15 @@ const PATTERNS: { value: PatternType; label: string }[] = [
 
 export default function Sidebar() {
   const store = useDesignStore()
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved'>('idle')
+
+  const handleSave = async () => {
+    if (saveState === 'saving') return
+    setSaveState('saving')
+    await store.saveCurrentWork()
+    setSaveState('saved')
+    setTimeout(() => setSaveState('idle'), 1500)
+  }
 
   return (
     <div className="w-72 bg-gray-900 border-l border-gray-700 p-4 overflow-y-auto flex flex-col gap-4">
@@ -91,10 +101,33 @@ export default function Sidebar() {
           onChange={e => store.setParam('opacity', Number(e.target.value))} className="w-full accent-pink-500" />
       </div>
 
+      {/* Save */}
+      <div className="mt-2">
+        <button
+          onClick={handleSave}
+          disabled={saveState === 'saving'}
+          className={`w-full py-2 rounded text-sm font-medium transition-all flex items-center justify-center gap-2 ${
+            saveState === 'saved'
+              ? 'bg-green-600'
+              : saveState === 'saving'
+              ? 'bg-gray-600 cursor-wait'
+              : 'bg-indigo-600 hover:bg-indigo-500'
+          }`}
+        >
+          {saveState === 'saved' ? (
+            <>✓ 已收藏</>
+          ) : saveState === 'saving' ? (
+            <>⏳ 保存中...</>
+          ) : (
+            <>⭐ 收藏作品</>
+          )}
+        </button>
+      </div>
+
       {/* Export */}
-      <div className="flex gap-2 mt-2">
-        <button onClick={() => store.exportSvg()} className="flex-1 py-2 bg-teal-600 rounded text-sm font-medium">⬇ SVG</button>
-        <button onClick={() => store.exportPng()} className="flex-1 py-2 bg-rose-600 rounded text-sm font-medium">⬇ PNG</button>
+      <div className="flex gap-2">
+        <button onClick={() => store.exportSvg()} className="flex-1 py-2 bg-teal-600 hover:bg-teal-500 rounded text-sm font-medium transition-colors">⬇ SVG</button>
+        <button onClick={() => store.exportPng()} className="flex-1 py-2 bg-rose-600 hover:bg-rose-500 rounded text-sm font-medium transition-colors">⬇ PNG</button>
       </div>
     </div>
   )

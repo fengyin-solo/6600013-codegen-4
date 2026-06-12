@@ -19,3 +19,12 @@ export interface ColorTheme {
   name: string
   colors: string[]
 }
+
+export interface SavedWork {
+  id: string
+  name: string
+  thumbnail: string
+  params: DesignParams
+  svgContent: string
+  createdAt: number
+}

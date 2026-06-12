@@ -1,9 +1,11 @@
 import ArtCanvas from './components/ArtCanvas'
 import Sidebar from './components/Sidebar'
+import CollectionPanel from './components/CollectionPanel'
 
 export default function App() {
   return (
     <div className="flex w-full h-full">
+      <CollectionPanel />
       <div className="flex-1 flex items-center justify-center bg-gray-950 overflow-auto p-6">
         <ArtCanvas />
       </div>
